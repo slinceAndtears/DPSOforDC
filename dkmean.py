@@ -18,7 +18,7 @@ def dkm():
     comm=MPI.COMM_WORLD
     rank=comm.Get_rank()
     size=comm.Get_size()
-    data=np.loadtxt('data/seeds/seeds%d.txt'%rank)
+    data=np.loadtxt('dataset/seeds/seeds%d.txt'%rank)
     centroid=Initcenter(data,k)#中心点
     u=np.random.random()
     y=np.zeros(k,dtype=np.float)#拉格朗日乘数
@@ -35,7 +35,7 @@ def dkm():
         if i!=rank:
             recv[i]=comm.recv(source=i)
 def Test2():
-    #data=np.loadtxt('data/seeds/seeds0.txt')
+    #data=np.loadtxt('dataset/seeds/seeds0.txt')
     #print(Initcenter(data,3))
     dic={}
     dic['A']='a'

@@ -32,10 +32,10 @@ def DKmeans(k,data):
         print('This is result')
         print(DBIndex(data,Assign(finalCentroid,data),finalCentroid))
     else:
-        d=np.loadtxt('n10d10c/10d10c%d.txt'%rank)
+        d=np.loadtxt('dataset/10d10c/10d10c%d.txt'%rank)
         #print(len(d))
         centroid=Kmeans(k,d)
         comm.send(centroid,dest=size-1)
 if __name__ == "__main__":
-    data=np.loadtxt('n10d10c/10d10c.txt')
+    data=np.loadtxt('dataset/10d10c/10d10c.txt')
     DKmeans(10,data)

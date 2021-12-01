@@ -183,7 +183,7 @@ def Loop2(data,Nc):
         M=UpdateM(data,Mt,Nc)
     return Mt
 def Test1():
-    data=np.loadtxt('D:/PyWorkSpace/severCode/iris.txt')
+    data=np.loadtxt('dataset/compound/compound.txt')
     centroid=Loop2(data,12)
     print(centroid)
     print(DBIndex(data,Assign(centroid,data),centroid))

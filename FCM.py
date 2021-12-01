@@ -104,7 +104,7 @@ def fcm(data,c):#改为使用最大迭代次数
             temp+=1
     return centroid
 def Test1():
-    data=np.loadtxt('data/2d10c/2d10c0.txt')
+    data=np.loadtxt('dataset/2d10c/2d10c0.txt')
     centre,label=fcm(data,10)
     print(len(centre))
     print(metrics.davies_bouldin_score(data,label))

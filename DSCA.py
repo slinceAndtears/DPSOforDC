@@ -32,9 +32,9 @@ def Dsca(k,data):
         #print(finalCentroid)
         print(DBIndex(data,Assign(finalCentroid,data),finalCentroid))
     else:
-        d=np.loadtxt('n10d10c/10d10c%d.txt'%rank)
+        d=np.loadtxt('dataset/10d10c/10d10c%d.txt'%rank)
         centroid=fcm(d,k)
         comm.send(centroid,dest=size-1)
 if __name__ == "__main__":
-    data=np.loadtxt('n10d10c/10d10c.txt')
+    data=np.loadtxt('dataset/10d10c/10d10c.txt')
     Dsca(10,data)
