@@ -6,6 +6,7 @@
  # 重复2-5 直到达到收敛（最大迭代次数）
 
 from mpi4py import MPI
+import numpy as np
 maxIte=10  #最大迭代次数
 if __name__=="__main__":
     print('xxx')
