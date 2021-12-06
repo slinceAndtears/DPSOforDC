@@ -1,3 +1,4 @@
+from operator import le
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
@@ -7,7 +8,7 @@ from scipy import stats
 import pyradbas as pyb
 import sklearn.neural_network as nn
 #from FCM import fcm
-def Test1():
+def Test1():#随机生成数据集
     data,label=make_blobs(n_samples=8000,n_features=10,centers=8,cluster_std=[1.5,1.6,1.7,1.7,1.6,1.5,1.6,1.6])
     np.savetxt('10d8c.txt',data)
     np.savetxt('label.txt',label,fmt='%d')
@@ -57,8 +58,8 @@ def divideData2(sum,l):
             s[l-1]+=1
     return d,s
 def Test3():
-    N=8#分成几份
-    data=np.loadtxt('D:/PyWorkSpace/n10d10c/10d10c.txt')
+    N=10#分成几份
+    data=np.loadtxt('dataset/HTRU2/HTRU2.txt')
     l=len(data)
     d=len(data[0])
     [dis,sum]=SendData(l,N)
@@ -69,7 +70,7 @@ def Test3():
             if dis[j]==i:
                 t[x]=data[j]
                 x+=1
-        np.savetxt('D:/PyWorkSpace/n10d10c/10d10c%d.txt'%i,t)
+        np.savetxt('dataset/HTRU2/HTRU2%d.txt'%i,t)
 def Test2():
     data=np.loadtxt('D:/PyWorkSpace/severCode/newdata/10d8c/10d8c.txt')
     #label=np.loadtxt('D:/PyWorkSpace/severCode/data/10d10c/label.txt',dtype=int)
