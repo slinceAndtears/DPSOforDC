@@ -8,5 +8,20 @@
 from mpi4py import MPI
 import numpy as np
 maxIte=10  #最大迭代次数
+def InitClusterCenter(data,k):#初始化中心点
+    center=np.zeros([len(data),k])
+    return center
+def Init():
+    comm=MPI.COMM_WORLD
+    rank=comm.Get_rank()
+    size=comm.Get_size()
+    data=np.loadtxt('dataset/seeds/seeds%d',rank)
+
+def PSDKM():
+    comm=MPI.COMM_WORLD
+    rank=comm.Get_rank()
+    size=comm.Get_size()
+    
 if __name__=="__main__":
-    print('xxx')
+    for i in range(maxIte):
+        PSDKM()
