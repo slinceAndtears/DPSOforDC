@@ -2,11 +2,13 @@ import numpy as np
 import random
 import sys
 from KMeans import kmeans
-s=50
+s=30
 c1=1.49
 c2=1.49
 w=0.82
 MaxV=255
+maxIteLoop1=30
+maxTieLoop2=3
 def Distance(d1,d2):
     sum=0.
     for i in range(len(d1)):
@@ -170,7 +172,7 @@ def Loop1(Z,M,Nd,Np,Nc):
     GbestF=sys.maxsize
     for i in range(s):
         PbestF[i]=sys.maxsize
-    for i in range(50):
+    for i in range(maxIteLoop1):
         [F,S]=Calculate(Z,S,M,Nd,Np,Nc)
         [Pbest,PbestF,Gbest,GbestF]=GetBestParticle(S,Pbest,PbestF,Gbest,GbestF,F,Nc)
         [S,V]=UpdataParticle(S,V,Pbest,Gbest,Nc)
@@ -178,12 +180,12 @@ def Loop1(Z,M,Nd,Np,Nc):
     return Mt 
 def Loop2(Z,Nd,Np,Nc):
     M=GenerateM(Z,Nc,Nd,Np,Nc)
-    for i in range(5):
+    for i in range(maxTieLoop2):
         Mt=Loop1(Z,M,Nd,Np,Nc)
         Mt=kmeans(Z,Mt)   
         M=UpdateM(Z,Mt,Nd,Np,Nc)
     return Mt
-def Dcpso(data,k):
+def dcpso(k,data):
     Nc=k*4
     Np=len(data)
     Nd=len(data[0])
