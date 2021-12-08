@@ -97,7 +97,7 @@ def Kmeans(k,data):
         label=Assign(centroid,data)
     return centroid
 #输出K个中心点和数据集，输出K个中心点，用于DCPSO
-def kmeans(centroid,data):
+def kmeans(data,centroid):
     error=0.
     k=len(centroid)
     label=Assign(centroid,data)
@@ -125,13 +125,63 @@ def FitCH(Z,label,centroid):
     for i in range(Nc):
         Tsw+=Distance1(Z[i],centroid[label[i]])
     return (Tsb/(k-1))/(Tsw/(Nc-k))
+
+def OneClusterDis(data):#计算一个簇内，两个点的最大距离
+    maxDisdance = 0.
+    length = len(data)
+    dimension = len(data[0])
+    for i in range(length-1):
+        for j in range (i+1,length):
+            maxDisdance = max(maxDisdance,distance(data[i],data[j]))
+    return maxDisdance
+
+def TwoClusterDis(data1,data2):#计算两个簇点的最小距离
+    len1 = len(data1)
+    len2 = len(data2)
+    minDistance = sys.maxsize
+    for i in range (len1):
+        for j in range (len2):
+            minDistance = min(minDistance,distance(data1[i],data2[j]))
+    return minDistance
+
+def DunnIndex(data,label,k):
+    Di = 0.
+    sum = np.zeros(k,dtype=int)
+    length = len(data)
+    dimension = len(data[0])
+    d = {}
+    result = 0.
+    Dij = sys.maxsize
+    for i in range(length):
+        sum[label[i]]+=1
+    for i in range (k):
+        points = np.zeros([sum[i],dimension])
+        index = 0
+        for j in range(length):
+            if label[j]==i:
+                points[index]=data[j]
+                index+=1
+        d[i]=points
+        Di = max(Di,OneClusterDis(points))
+    for i in range(k-1):
+        for j in range(i+1,k):
+            Dij = min(Dij,TwoClusterDis(d[i],d[j]))
+    result = Dij / Di
+    return result
+
 def Test3():
     data=np.loadtxt('dataset/compound/compound.txt')
-    centroid=Kmeans(8,data)
+    k=8
+    print('finish')
+    centroid=Kmeans(k,data)
     label=Assign(centroid,data)
-    print(DBIndex(data,label,centroid))
+    #print(DBIndex(data,label,centroid))
+    myindex=DunnIndex(data, label,k)
+    print('myindex')
+    print(myindex)
 def Test1():
     for i in range(30):
         Test3()
+
 if __name__ == "__main__":
     Test3()
