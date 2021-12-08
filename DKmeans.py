@@ -28,14 +28,20 @@ def DKmeans(k,data):
             else:
                 centroid=Add(centroid,recvCentroid)
         finalCentroid=Kmeans(k,centroid)
-        #print(finalCentroid)
-        print('This is result')
-        print(DBIndex(data,Assign(finalCentroid,data),finalCentroid))
+        print('finish')
+        storeResult(finalCentroid)
     else:
         d=np.loadtxt('dataset/10d10c/10d10c%d.txt'%rank)
         #print(len(d))
         centroid=Kmeans(k,d)
         comm.send(centroid,dest=size-1)
+def storeResult(centroid):#用于保存最终的结果
+    f = open('result_.txt', 'a')
+    f.writelines('This is result\n')
+    f.writelines(str(centroid)+'\n')
+    value = DBIndex(data,Assign(centroid,data),centroid)
+    f.writelines(str(value)+'\n')
+    f.close()
 if __name__ == "__main__":
     data=np.loadtxt('dataset/10d10c/10d10c.txt')
     DKmeans(10,data)

@@ -4,7 +4,7 @@ from KMeans import Kmeans
 from KMeans import DBIndex
 from KMeans import Assign
 from KMeans import FitCH
-from Dcpso import dcpso
+from dcpso import dcpso
 def Add(d1,d2):
     l1=len(d1)
     l2=len(d2)
@@ -37,7 +37,7 @@ def DKmeans(k,data):
         centroid=dcpso(k,d)
         comm.send(centroid,dest=size-1)
 def storeResult(centroid):#用于保存最终的结果
-    f = open('result.txt','a', buffering=0)
+    f = open('result.txt', 'a')
     f.writelines('This is result\n')
     f.writelines(str(centroid)+'\n')
     value = DBIndex(data,Assign(centroid,data),centroid)
