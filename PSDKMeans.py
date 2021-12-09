@@ -7,21 +7,26 @@
 
 from mpi4py import MPI
 import numpy as np
+from KMeans import initCentroid
+from KMeans import Assign
 maxIte=10  #最大迭代次数
-def InitClusterCenter(data,k):#初始化中心点
-    center=np.zeros([len(data),k])
-    return center
-def Init():
-    comm=MPI.COMM_WORLD
-    rank=comm.Get_rank()
-    size=comm.Get_size()
-    data=np.loadtxt('dataset/seeds/seeds%d',rank)
-
+k=3#聚类个数
 def PSDKM():
-    comm=MPI.COMM_WORLD
-    rank=comm.Get_rank()
-    size=comm.Get_size()
-    
-if __name__=="__main__":
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    data = np.loadtxt('dataset/seeds/seeds%d.txt'%rank)
+    centroids = initCentroid(k,data)
+    label = Assign(centroids,data)
+    u = np.random.random_sample()
+    L = np.random.random_sample()#拉格朗日乘数
     for i in range(maxIte):
-        PSDKM()
+        allCentroids={}
+        for i in range(rank):
+            data=comm.bcast(centroids,i)
+            allCentroids[i]=data
+        comm.send(L,dest=(i+1)%rank)
+        recvL=comm.recv(source=(i-1+rank) % rank)
+        #update centroids and L
+if __name__=="__main__":
+    PSDKM()
