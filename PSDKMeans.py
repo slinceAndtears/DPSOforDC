@@ -11,6 +11,14 @@ from KMeans import initCentroid
 from KMeans import Assign
 maxIte=10  #最大迭代次数
 k=3#聚类个数
+
+def UpdateCentroids(allCentroids,centroids,u):
+    centroid = np.zeros([len(centroids),len(centroids[0])])
+    return centroid
+
+def UpdateLag():
+    return 0
+
 def PSDKM():
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
@@ -20,13 +28,25 @@ def PSDKM():
     label = Assign(centroids,data)
     u = np.random.random_sample()
     L = np.random.random_sample()#拉格朗日乘数
+
     for i in range(maxIte):
-        allCentroids={}
-        for i in range(rank):
-            data=comm.bcast(centroids,i)
-            allCentroids[i]=data
-        comm.send(L,dest=(i+1)%rank)
-        recvL=comm.recv(source=(i-1+rank) % rank)
-        #update centroids and L
+        allCentroids = {}
+        allCentroids[rank] = centroids
+        allLag=np.zeros(size,dtype=float)
+        allLag[rank]=L
+        #向所有邻居发送中心点
+        for i in range(size):
+            if i!=rank:
+                comm.send(centroids,dest=i, tag = 1)
+                comm.send(L,dest=i, tag = 2)
+        #接收所有邻居的中心点
+        for i in range(size):
+            if i!=rank:
+                allCentroids[i] = comm.recv(source = i, tag = 1)
+                allLag[i] = comm.recv(source = i,tag = 2)
+        newCentroids=UpdateCentroids(allCentroids,centroids,u)
+        newL=UpdateLag()
+
+        
 if __name__=="__main__":
     PSDKM()
