@@ -195,6 +195,14 @@ def DunnIndex(data, label, k):
     return result
 
 
+def Iindex(data, label, centroids):
+    k = len(centroids)
+    p = 2
+    EK = SequareError(centroids, data, label)
+    E1 = 0.2
+    return ((1/k)*(E1/EK)*OneClusterDis(centroids))
+
+
 def Test3():
     data = np.loadtxt('dataset/compound/compound.txt')
     k = 8
