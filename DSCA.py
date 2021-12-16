@@ -4,43 +4,51 @@ from FCM import fcm
 from KMeans import DBIndex
 from KMeans import Kmeans
 from KMeans import Assign
-def Add(d1,d2):
-    l1=len(d1)
-    l2=len(d2)
-    d=len(d1[0])
-    centroid=np.zeros([l1+l2,d])
+
+
+def Add(d1, d2):
+    l1 = len(d1)
+    l2 = len(d2)
+    d = len(d1[0])
+    centroid = np.zeros([l1+l2, d])
     for i in range(l1):
-        centroid[i]=d1[i]
-    for i in range(l1,l1+l2):
-        centroid[i]=d2[i-l1]
+        centroid[i] = d1[i]
+    for i in range(l1, l1+l2):
+        centroid[i] = d2[i-l1]
     return centroid
-def Dsca(k,data):
-    comm=MPI.COMM_WORLD
-    rank=comm.Get_rank()
-    size=comm.Get_size()
-    if rank==size-1:
-        d=len(data[0])
-        finalCentroid=np.zeros([k,d])
+
+
+def Dsca(k, data):
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    if rank == size-1:
+        d = len(data[0])
+        finalCentroid = np.zeros([k, d])
         for i in range(size-1):
-            recvCentroid=comm.recv(source=i)
-            if i==0:
-                centroid=recvCentroid
+            recvCentroid = comm.recv(source=i)
+            if i == 0:
+                centroid = recvCentroid
             else:
-                centroid=Add(centroid,recvCentroid)
-        finalCentroid=Kmeans(k,centroid)
+                centroid = Add(centroid, recvCentroid)
+        finalCentroid = Kmeans(k, centroid)
         print('finish')
         storeResult(finalCentroid)
     else:
-        d=np.loadtxt('dataset/10d10c/10d10c%d.txt'%rank)
-        centroid=fcm(d,k)
-        comm.send(centroid,dest=size-1)
-def storeResult(centroid):#用于保存最终的结果
+        d = np.loadtxt('dataset/10d10c/10d10c%d.txt' % rank)
+        centroid = fcm(d, k)
+        comm.send(centroid, dest=size-1)
+
+
+def storeResult(centroid):  # 用于保存最终的结果
     f = open('result_.txt', 'a')
     f.writelines('This is result\n')
     f.writelines(str(centroid)+'\n')
-    value = DBIndex(data,Assign(centroid,data),centroid)
+    value = DBIndex(data, Assign(centroid, data), centroid)
     f.writelines(str(value)+'\n')
     f.close()
+
+
 if __name__ == "__main__":
-    data=np.loadtxt('dataset/10d10c/10d10c.txt')
-    Dsca(10,data)
+    data = np.loadtxt('dataset/10d10c/10d10c.txt')
+    Dsca(10, data)
