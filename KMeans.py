@@ -199,7 +199,7 @@ def Iindex(data, label, centroids):
     k = len(centroids)
     p = 2
     EK = SequareError(centroids, data, label)
-    E1 = 0.2
+    E1 = len(data)
     return ((1/k)*(E1/EK)*OneClusterDis(centroids))
 
 
