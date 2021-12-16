@@ -8,13 +8,28 @@
 # 对所有本地数据求出Dunn指标，然后求他们的平均值,不公平(对所有站点的数据进行汇总，然后用kmeans聚合得出结果)
 # 问题：聚类之后，不同的中心点变成一样的了（原论文更新中心点的地方，除数是站点数量，现论文是处理数据总量）
 
+import sys
 from mpi4py import MPI
 import numpy as np
 from KMeans import initCentroid, DBIndex, Assign, DunnIndex, Kmeans
 from DKmeans import Add
+from queue import PriorityQueue
 maxIte1 = 15  # 欧式距离的最大迭代次数
 maxTie2 = 15  # 点对称距离的最大迭代次数
 k = 8  # 聚类个数
+knear = 2  # 点对称距离中的参数 此处和原始论文中一直
+
+
+def PartitionBaseSymDis(centroids, data):
+    label = np.zeros(len(data), dtype=int)
+    for i in range(len(data)):
+        min = sys.maxsize
+        for j in range(len(centroids)):
+            symdis = PointSymDistance(data, data[i], centroids[j])
+            if min > symdis:
+                min = symdis
+                label[i] = j
+    return label
 
 
 def UpdateCentroidsAndLag(data, label, allCentroids, allLag, oldCentroids, oldLag, u, rank, size):
@@ -48,15 +63,18 @@ def EucDistance(d1, d2):
     return np.sqrt(distance)
 
 
-def SymDistance(d1, d2):
-    distance = 0.
-    return distance
-
-
-def PointSymDistance(data, centroid):
-    de = EucDistance(data, centroid)
-    distance = 0.
-    return distance
+def PointSymDistance(allData, point, centroid):
+    eucDis = EucDistance(point, centroid)
+    psd = 0.
+    SymData = centroid*2-point
+    q = PriorityQueue()
+    for i in range(len(point)):
+        dis = EucDistance(allData[i], SymData)
+        q.put(dis, dis)
+    sum = 0.
+    for i in range(knear):
+        sum += q.get()
+    return eucDis*(sum/knear)
 
 
 def GetFinalCentroid(allCentroids, size):
@@ -65,6 +83,15 @@ def GetFinalCentroid(allCentroids, size):
         finalcentroid = Add(finalcentroid, allCentroids[i])
     centroids = Kmeans(k, finalcentroid)
     return centroids
+
+
+def storeResult(data, centroid, filename):  # 用于保存最终的结果
+    f = open(filename, 'a')
+    f.writelines('This is result\n')
+    f.writelines(str(centroid)+'\n')
+    value = DBIndex(data, Assign(centroid, data), centroid)
+    f.writelines(str(value)+'\n')
+    f.close()
 
 
 def PSDKM():
@@ -86,12 +113,11 @@ def PSDKM():
             L[i][j] = centroids[i][j]
     allCentroids = {}
     allLag = {}
-    # 欧式距离迭代
     for i in range(maxIte1+maxTie2):
-        if i < maxIte1:
+        if i < maxIte1:  # 先使用欧式距离迭代
             label = Assign(centroids, data)
-        else:
-            label = np.zeros([1])
+        else:  # 后续再使用点对称距离
+            label = PartitionBaseSymDis(centroids, data)
         allCentroids[rank] = centroids
         allLag[rank] = L
         # 向所有邻居发送中心点
@@ -109,6 +135,8 @@ def PSDKM():
     # 交给rank为0的进程对所有中心点进行汇总
     if rank == 0:
         finalCentroids = GetFinalCentroid(allCentroids, size)
+        filename = ''
+        storeResult(allData, finalCentroids, filename)
 
 
 if __name__ == "__main__":
