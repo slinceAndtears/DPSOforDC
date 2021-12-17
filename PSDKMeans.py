@@ -14,8 +14,9 @@ import numpy as np
 from KMeans import initCentroid, DBIndex, Assign, DunnIndex, Kmeans
 from DKmeans import Add
 from queue import PriorityQueue
-maxIte1 = 15  # 欧式距离的最大迭代次数
-maxTie2 = 15  # 点对称距离的最大迭代次数
+maxIte = 20
+maxIte1 = int(maxIte * 0.8)  # 欧式距离的最大迭代次数
+maxTie2 = int(maxIte * 0.2)  # 点对称距离的最大迭代次数
 k = 8  # 聚类个数
 knear = 2  # 点对称距离中的参数 此处和原始论文中一直
 
