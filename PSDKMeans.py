@@ -12,7 +12,7 @@ import sys
 from mpi4py import MPI
 import numpy as np
 from KMeans import initCentroid, DBIndex, Assign, DunnIndex, Kmeans
-from DKmeans import Add
+from DKmeans import Add, storeResult
 from queue import PriorityQueue
 maxIte = 20
 maxIte1 = int(maxIte * 0.8)  # 欧式距离的最大迭代次数
@@ -86,15 +86,6 @@ def GetFinalCentroid(allCentroids, size):
     return centroids
 
 
-def storeResult(data, centroid, filename):  # 用于保存最终的结果
-    f = open(filename, 'a')
-    f.writelines('This is result\n')
-    f.writelines(str(centroid)+'\n')
-    value = DBIndex(data, Assign(centroid, data), centroid)
-    f.writelines(str(value)+'\n')
-    f.close()
-
-
 def PSDKM():
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
@@ -136,7 +127,7 @@ def PSDKM():
     # 交给rank为0的进程对所有中心点进行汇总
     if rank == 0:
         finalCentroids = GetFinalCentroid(allCentroids, size)
-        filename = ''
+        filename = '10d10c_PSDKMeans.txt'
         storeResult(allData, finalCentroids, filename)
 
 

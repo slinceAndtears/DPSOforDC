@@ -3,7 +3,8 @@ import numpy as np
 from KMeans import Kmeans
 from KMeans import DBIndex
 from KMeans import Assign
-from KMeans import FitCH
+from KMeans import FitCH, Iindex
+from Dunn import dunn_fast
 
 
 def Add(d1, d2):
@@ -33,8 +34,8 @@ def DKmeans(k, data):
                 centroid = Add(centroid, recvCentroid)
         finalCentroid = Kmeans(k, centroid)
         print('finish')
-        filename = 'result.txt'
-        storeResult(finalCentroid, filename)
+        filename = '10d10c_DKmeans.txt'
+        storeResult(data, finalCentroid, filename)
     else:
         d = np.loadtxt('dataset/10d10c/10d10c%d.txt' % rank)
         # print(len(d))
@@ -42,12 +43,28 @@ def DKmeans(k, data):
         comm.send(centroid, dest=size - 1)
 
 
-def storeResult(centroid, filename):  # 用于保存最终的结果
+def storeResult(data, centroid, filename):  # 用于保存最终的结果
+    label = Assign(centroid, data)
     f = open(filename, 'a')
     f.writelines('This is result\n')
     f.writelines(str(centroid)+'\n')
-    value = DBIndex(data, Assign(centroid, data), centroid)
-    f.writelines(str(value)+'\n')
+
+    f.writelines('This is Ch index\n')
+    CHValue = FitCH(data, label, centroid)
+    f.writelines(str(CHValue)+'\n')
+
+    f.writelines('This is DB index\n')
+    DBValue = DBIndex(data, label, centroid)
+    f.writelines(str(DBValue)+'\n')
+
+    f.writelines('This is I index\n')
+    IValue = Iindex(data, label, centroid)
+    f.writelines(str(IValue)+'\n')
+
+    f.writelines('This is Dunn index\n')
+    DunnValue = dunn_fast(data, label, centroid)
+    f.writelines(str(DunnValue)+'\n')
+
     f.close()
 
 

@@ -3,6 +3,7 @@ import sys
 from sklearn import metrics
 from sklearn.cluster import KMeans
 from FCM import fcm
+from Dunn import dunn_fast
 # 欧几里得距离
 
 
@@ -203,6 +204,31 @@ def Iindex(data, label, centroids):
     return ((1/k)*(E1/EK)*OneClusterDis(centroids))
 
 
+def getValidIndexResult():
+    data = np.loadtxt('centroid.txt')
+    dataset=np.loadtxt('dataset/20d10c/20d10c.txt')
+    d = 20
+    c = 10
+    centroids = np.zeros([10, 20], dtype=float)
+    x = 0
+    y = 0
+    for i in range(len(data)):
+        for j in range(len(data[0])):
+            centroids[x][y] = data[i][j]
+            y += 1
+            if y == d:
+                x += 1
+                y = 0
+    label=Assign(centroids,dataset)
+    print('CH index is :')
+    print(FitCH(dataset,label,centroids))
+    print('DB index is :')
+    print(DBIndex(dataset,label,centroids))
+    print('I index is :')
+    print(Iindex(dataset,label,centroids))
+    print("Dunn Index is :")
+    print(dunn_fast(dataset,label))
+
 def Test3():
     data = np.loadtxt('dataset/compound/compound.txt')
     k = 8
@@ -221,4 +247,5 @@ def Test1():
 
 
 if __name__ == "__main__":
-    Test3()
+    #Test3()
+    getValidIndexResult()

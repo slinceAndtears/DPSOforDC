@@ -4,6 +4,7 @@ from FCM import fcm
 from KMeans import DBIndex
 from KMeans import Kmeans
 from KMeans import Assign
+from DKmeans import storeResult
 
 
 def Add(d1, d2):
@@ -33,20 +34,12 @@ def Dsca(k, data):
                 centroid = Add(centroid, recvCentroid)
         finalCentroid = Kmeans(k, centroid)
         print('finish')
-        storeResult(finalCentroid)
+        filename = '10d10c_DSCA.txt'
+        storeResult(data, finalCentroid, filename)
     else:
         d = np.loadtxt('dataset/10d10c/10d10c%d.txt' % rank)
         centroid = fcm(d, k)
         comm.send(centroid, dest=size-1)
-
-
-def storeResult(centroid):  # 用于保存最终的结果
-    f = open('result_.txt', 'a')
-    f.writelines('This is result\n')
-    f.writelines(str(centroid)+'\n')
-    value = DBIndex(data, Assign(centroid, data), centroid)
-    f.writelines(str(value)+'\n')
-    f.close()
 
 
 if __name__ == "__main__":
