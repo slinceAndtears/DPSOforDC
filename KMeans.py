@@ -205,29 +205,38 @@ def Iindex(data, label, centroids):
 
 
 def getValidIndexResult():
-    data = np.loadtxt('centroid.txt')
-    dataset=np.loadtxt('dataset/20d10c/20d10c.txt')
     d = 20
     c = 10
-    centroids = np.zeros([10, 20], dtype=float)
+    centroids = np.zeros([c, d], dtype=float)
+    dataset = np.loadtxt('dataset/20d10c/20d10c.txt')
     x = 0
     y = 0
-    for i in range(len(data)):
-        for j in range(len(data[0])):
-            centroids[x][y] = data[i][j]
+    f = open('centroid.txt', 'r')
+    for line in f.readlines():
+        line = line.replace('[', '')
+        line = line.replace(']', '')
+        line = line.strip('\n')
+        line = line.split()
+        line = [float(x) for x in line]
+        a = np.array(line)
+        for i in range(len(a)):
+            centroids[x][y] = a[i]
             y += 1
             if y == d:
-                x += 1
                 y = 0
-    label=Assign(centroids,dataset)
+                x += 1
+    label = Assign(centroids, dataset)
     print('CH index is :')
-    print(FitCH(dataset,label,centroids))
+    print(FitCH(dataset, label, centroids))
+    # print(metrics.calinski_harabasz_score(dataset,label))
     print('DB index is :')
-    print(DBIndex(dataset,label,centroids))
+    print(DBIndex(dataset, label, centroids))
+    # print(metrics.davies_bouldin_score(dataset,label))
     print('I index is :')
-    print(Iindex(dataset,label,centroids))
+    print(Iindex(dataset, label, centroids))
     print("Dunn Index is :")
-    print(dunn_fast(dataset,label))
+    print(dunn_fast(dataset, label))
+
 
 def Test3():
     data = np.loadtxt('dataset/compound/compound.txt')
@@ -247,5 +256,5 @@ def Test1():
 
 
 if __name__ == "__main__":
-    #Test3()
+    # Test3()
     getValidIndexResult()
