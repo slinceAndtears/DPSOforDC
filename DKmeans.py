@@ -3,7 +3,7 @@ import numpy as np
 from KMeans import Kmeans
 from KMeans import DBIndex
 from KMeans import Assign
-from KMeans import FitCH, Iindex
+from KMeans import FitCH, Iindex, storeResult
 from Dunn import dunn_fast
 
 
@@ -41,31 +41,6 @@ def DKmeans(k, data):
         # print(len(d))
         centroid = Kmeans(k, d)
         comm.send(centroid, dest=size - 1)
-
-
-def storeResult(data, centroid, filename):  # 用于保存最终的结果
-    label = Assign(centroid, data)
-    f = open(filename, 'a')
-    f.writelines('This is result\n')
-    f.writelines(str(centroid)+'\n')
-
-    f.writelines('This is Ch index\n')
-    CHValue = FitCH(data, label, centroid)
-    f.writelines(str(CHValue)+'\n')
-
-    f.writelines('This is DB index\n')
-    DBValue = DBIndex(data, label, centroid)
-    f.writelines(str(DBValue)+'\n')
-
-    f.writelines('This is I index\n')
-    IValue = Iindex(data, label, centroid)
-    f.writelines(str(IValue)+'\n')
-
-    f.writelines('This is Dunn index\n')
-    DunnValue = dunn_fast(data, label, centroid)
-    f.writelines(str(DunnValue)+'\n')
-
-    f.close()
 
 
 if __name__ == "__main__":

@@ -204,6 +204,31 @@ def Iindex(data, label, centroids):
     return ((1/k)*(E1/EK)*OneClusterDis(centroids))
 
 
+def storeResult(data, centroid, filename):  # 用于保存最终的结果
+    label = Assign(centroid, data)
+    f = open(filename, 'a')
+    f.writelines('This is result\n')
+    f.writelines(str(centroid)+'\n')
+
+    f.writelines('This is Ch index\n')
+    CHValue = FitCH(data, label, centroid)
+    f.writelines(str(CHValue)+'\n')
+
+    f.writelines('This is DB index\n')
+    DBValue = DBIndex(data, label, centroid)
+    f.writelines(str(DBValue)+'\n')
+
+    f.writelines('This is I index\n')
+    IValue = Iindex(data, label, centroid)
+    f.writelines(str(IValue)+'\n')
+
+    f.writelines('This is Dunn index\n')
+    DunnValue = dunn_fast(data, label, centroid)
+    f.writelines(str(DunnValue)+'\n')
+
+    f.close()
+
+
 def getValidIndexResult():
     d = 20
     c = 10

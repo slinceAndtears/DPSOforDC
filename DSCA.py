@@ -3,8 +3,7 @@ import numpy as np
 from FCM import fcm
 from KMeans import DBIndex
 from KMeans import Kmeans
-from KMeans import Assign
-from DKmeans import storeResult
+from KMeans import Assign, storeResult
 
 
 def Add(d1, d2):
