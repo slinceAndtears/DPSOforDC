@@ -11,8 +11,7 @@
 import sys
 from mpi4py import MPI
 import numpy as np
-from KMeans import initCentroid, DBIndex, Assign, DunnIndex, Kmeans
-from DKmeans import Add, storeResult
+from KMeans import initCentroid, DBIndex, Assign, DunnIndex, Kmeans, Add, storeResult
 from queue import PriorityQueue
 maxIte = 20
 maxIte1 = int(maxIte * 0.8)  # 欧式距离的最大迭代次数
