@@ -3,14 +3,15 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
 import random
-from sklearn.datasets import make_blobs
+from sklearn.datasets import make_blobs, make_circles
+from sklearn import datasets
 from scipy import stats
 import pyradbas as pyb
 import sklearn.neural_network as nn
 #from FCM import fcm
 
 
-def Test1():  # 随机生成数据集
+def generate_dataset():  # 随机生成数据集
     data, label = make_blobs(n_samples=8000, n_features=10, centers=8, cluster_std=[
                              1.5, 1.6, 1.7, 1.7, 1.6, 1.5, 1.6, 1.6])
     np.savetxt('10d8c.txt', data)
@@ -68,7 +69,7 @@ def divideData2(sum, l):
     return d, s
 
 
-def Test3():
+def divide_data():
     N = 10  # 分成几份
     data = np.loadtxt('dataset/HTRU2/HTRU2.txt')
     l = len(data)
@@ -84,7 +85,7 @@ def Test3():
         np.savetxt('dataset/HTRU2/HTRU2%d.txt' % i, t)
 
 
-def Test2():
+def show_data():
     data = np.loadtxt('D:/PyWorkSpace/severCode/newdata/10d8c/10d8c.txt')
     # label=np.loadtxt('D:/PyWorkSpace/severCode/data/10d10c/label.txt',dtype=int)
     pca = PCA(n_components=2)
@@ -94,7 +95,7 @@ def Test2():
     plt.show()
 
 
-def Test4():
+def calculate_var():
     data0 = np.loadtxt('severCode/r1.txt')
     data1 = np.loadtxt('severCode/r2.txt')
     data2 = np.loadtxt('severCode/r3.txt')
@@ -114,6 +115,22 @@ def Test5():
     # result=np.loadtxt('severCode/r3.txt',dtype=float)
     # result=np.array([1,2,3])
     print('xxxxx')
+    # data,label=datasets.make_circles(n_samples=1200,noise=0.05,factor=0.2)
+    bar1 = np.zeros([300, 2], dtype=float)
+    f = open('circle.txt', 'a')
+    for i in range(len(bar1)):
+        bar1[i][0] = np.random.uniform(-1, 2)
+        bar1[i][1] = np.random.uniform(1.2, 2)
+        line = str(bar1[i])
+        line = line.strip('[')
+        line = line.strip(']')
+        f.writelines(line)
+        f.writelines('\n')
+    #np.set_printoptions(suppress = True)
+    # np.savetxt('circle.txt',data,fmt='%f')
+    # np.savetxt('label.txt',label,fmt='%d')
+    plt.scatter(bar1[:, 0], bar1[:, 1], marker='.')
+    plt.show()
 
 
 def Test6():
