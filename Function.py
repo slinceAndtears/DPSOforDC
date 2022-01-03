@@ -86,12 +86,15 @@ def divide_data():
 
 
 def show_data():
-    data = np.loadtxt('D:/PyWorkSpace/severCode/newdata/10d8c/10d8c.txt')
+    data = np.loadtxt('dataset/half-ring-1000/half-ring-1000.txt')
     # label=np.loadtxt('D:/PyWorkSpace/severCode/data/10d10c/label.txt',dtype=int)
+    #data,label=datasets.make_moons(n_samples=1200,noise=0.08)
+    #np.savetxt('half-ring-1200.txt',data)
+    #np.savetxt('label.txt',label,fmt='%d')
     pca = PCA(n_components=2)
     pca.fit(data)
     data = pca.fit_transform(data)
-    plt.scatter(data[:, 0], data[:, 1], c='black', marker='.')
+    plt.scatter(data[:, 0], data[:, 1], marker='.')
     plt.show()
 
 
@@ -153,4 +156,5 @@ def Test6():
 
 
 if __name__ == "__main__":
-    Test5()
+    #Test5()
+    show_data()
