@@ -68,7 +68,7 @@ def PointSymDistance(allData, point, centroid):
     psd = 0.
     SymData = centroid*2-point
     q = PriorityQueue()
-    for i in range(len(point)):
+    for i in range(len(allData)):
         dis = EucDistance(allData[i], SymData)
         q.put(dis, dis)
     sum = 0.

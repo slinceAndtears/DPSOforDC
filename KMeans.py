@@ -1,11 +1,14 @@
 import numpy as np
 import sys
 from sklearn import metrics
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans,DBSCAN
 from FCM import fcm
 from Dunn import dunn_fast
+from queue import PriorityQueue
+import matplotlib.pyplot as plt
 # 欧几里得距离
-
+knear = 2
+maxIte=20
 
 def distance(d1, d2):
     sum = 0.
@@ -14,12 +17,53 @@ def distance(d1, d2):
     return np.sqrt(sum)
 
 
+def Manhattan_distance(d1, d2):
+    sum = 0.
+    for i in range(len(d1)):
+        sum += np.abs(d1[i]-d2[i])
+    return sum
+
+
+def Chebyshev_distance(d1, d2):
+    sum = 0.
+    for i in range(len(d1)):
+        if sum< np.abs(d1[i]-d2[i]):
+            sum=np.abs(d1[i]-d2[i])
+    return sum
+
+
+def PointSymDistance(allData, point, centroid):
+    eucDis = distance(point, centroid)
+    psd = 0.
+    SymData = centroid*2-point
+    q = PriorityQueue()
+    for i in range(len(allData)):
+        dis = distance(allData[i], SymData)
+        q.put(dis, dis)
+    sum = 0.
+    for i in range(knear):
+        sum += q.get()
+    return eucDis*(sum/knear)
+
+
 def Distance1(d1, d2):
     sum = 0.
     for i in range(len(d1)):
         sum += (d1[i]-d2[i])*(d1[i]-d2[i])
     return sum
 # 初始化中心点
+
+
+def Assign_base_PSDistance(centroid, data):
+    size = len(data)
+    label = np.zeros(size, dtype=int)
+    for i in range(size):
+        min = sys.maxsize
+        for j in range(len(centroid)):
+            if(min > PointSymDistance(data, data[i], centroid[j])):
+                min = PointSymDistance(data, data[i], centroid[j])
+                label[i] = j
+    return label
 
 
 def initCentroid(k, data):
@@ -104,6 +148,18 @@ def DBIndex(data, label, centroid):
         sum += max
     return sum/k
 # 数据数据集和聚类个数K，输出K个中心点 用于常规聚类
+
+
+def Kmeans_basePSDistance(k, data):
+    centroid = initCentroid(k, data)
+    error = 0.
+    label = Assign_base_PSDistance(centroid, data)
+    for i in range(maxIte):
+        print('ite: '+str(i))
+        error = SequareError(centroid, data, label)
+        centroid = getNewCentroid(label, data, k, centroid)
+        label = Assign_base_PSDistance(centroid, data)
+    return centroid
 
 
 def Kmeans(k, data):
@@ -264,16 +320,37 @@ def getValidIndexResult():
 
 
 def Test3():
-    data = np.loadtxt('dataset/compound/compound.txt')
-    k = 8
+    data = np.loadtxt('dataset/half-ring-1000/half-ring-1000.txt')
+    k = 2
     print('finish')
-    centroid = Kmeans(k, data)
-    label = Assign(centroid, data)
+    centroid = Kmeans_basePSDistance(k, data)
+    label = Assign_base_PSDistance(centroid, data)
     # print(DBIndex(data,label,centroid))
-    myindex = DunnIndex(data, label, k)
-    print('myindex')
-    print(myindex)
+    #myindex = DunnIndex(data, label, k)
+    # print('myindex')
+    # print(myindex)
+    centroid1=Kmeans(k,data)
+    label1=Assign(centroid1,data)
+    print('PS distance')
+    print(metrics.silhouette_score(data, label))
+    print(dunn_fast(data,label))
+    print('eu distance')
+    print(metrics.silhouette_score(data,label1))
+    print(dunn_fast(data,label1))
+    plt.scatter(data[:,0],data[:,1],c=label,marker='.')
+    plt.show()
+    #print(dunn_fast(data,label))
+    #print(dunn_fast(data,label1))
 
+def test_DBSCAN():
+    data=np.loadtxt('dataset/half-ring-1000/half-ring-1000.txt')
+    label=DBSCAN(eps=0.1).fit_predict(data)
+    print(label)
+    print('DBSCAN')
+    print(dunn_fast(data,label))
+    print(metrics.silhouette_score(data,label))
+    plt.scatter(data[:,0],data[:,1],c=label,marker='.')
+    plt.show()
 
 def Test1():
     for i in range(30):
@@ -281,5 +358,6 @@ def Test1():
 
 
 if __name__ == "__main__":
-    # Test3()
-    getValidIndexResult()
+    Test3()
+    #test_DBSCAN()
+    # getValidIndexResult()
