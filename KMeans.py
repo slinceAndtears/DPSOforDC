@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 from sklearn import metrics
-from sklearn.cluster import KMeans,DBSCAN
+from sklearn.cluster import KMeans, DBSCAN
 from FCM import fcm
 from Dunn import dunn_fast
 from queue import PriorityQueue
@@ -27,8 +27,8 @@ def Manhattan_distance(d1, d2):
 def Chebyshev_distance(d1, d2):
     sum = 0.
     for i in range(len(d1)):
-        if sum< np.abs(d1[i]-d2[i]):
-            sum=np.abs(d1[i]-d2[i])
+        if sum < np.abs(d1[i]-d2[i]):
+            sum = np.abs(d1[i]-d2[i])
     return sum
 
 
@@ -177,11 +177,11 @@ def Kmeans(k, data):
 def kmeans(data, centroid):
     error = 0.
     k = len(centroid)
-    label = Assign(centroid, data)
+    label = Assign_base_PSDistance(centroid, data)
     while error != SequareError(centroid, data, label):
         error = SequareError(centroid, data, label)
         centroid = getNewCentroid(label, data, k, centroid)
-        label = Assign(centroid, data)
+        label = Assign_base_PSDistance(centroid, data)
     return centroid
 # CH指标值
 
@@ -323,33 +323,36 @@ def Test3():
     data = np.loadtxt('dataset/half-ring-1000/half-ring-1000.txt')
     k = 2
     print('finish')
-    centroid = Kmeans_basePSDistance(k, data)
-    label = Assign_base_PSDistance(centroid, data)
+    centroid,label = Kmeans_basePSDistance(k, data)
+    #label = Assign_base_PSDistance(centroid, data)
     # print(DBIndex(data,label,centroid))
     #myindex = DunnIndex(data, label, k)
     # print('myindex')
     # print(myindex)
-    centroid1=Kmeans(k,data)
-    label1=Assign(centroid1,data)
+    centroid1 = Kmeans(k, data)
+    label1 = Assign(centroid1, data)
     print('PS distance')
     print(metrics.silhouette_score(data, label))
-    print(dunn_fast(data,label))
+    print(dunn_fast(data, label))
     print('eu distance')
-    print(metrics.silhouette_score(data,label1))
-    print(dunn_fast(data,label1))
-    plt.scatter(data[:,0],data[:,1],c=label,marker='.')
+    print(metrics.silhouette_score(data, label1))
+    print(dunn_fast(data, label1))
+    print(centroid)
+    print(centroid1)
+    plt.scatter(data[:, 0], data[:, 1], c=label, marker='.')
     plt.show()
-    #print(dunn_fast(data,label))
-    #print(dunn_fast(data,label1))
+    # print(dunn_fast(data,label))
+    # print(dunn_fast(data,label1))
+
 
 def test_DBSCAN():
-    data=np.loadtxt('dataset/half-ring-1000/half-ring-1000.txt')
-    label=DBSCAN(eps=0.1).fit_predict(data)
+    data = np.loadtxt('dataset/half-ring-1000/half-ring-1000.txt')
+    label = DBSCAN(eps=0.1).fit_predict(data)
     print(label)
     print('DBSCAN')
-    print(dunn_fast(data,label))
-    print(metrics.silhouette_score(data,label))
-    plt.scatter(data[:,0],data[:,1],c=label,marker='.')
+    print(dunn_fast(data, label))
+    print(metrics.silhouette_score(data, label))
+    plt.scatter(data[:, 0], data[:, 1], c=label, marker='.')
     plt.show()
 
 def Test1():
