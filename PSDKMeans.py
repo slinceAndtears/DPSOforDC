@@ -11,13 +11,15 @@
 import sys
 from mpi4py import MPI
 import numpy as np
-from KMeans import initCentroid, DBIndex, Assign, DunnIndex, Kmeans, Add, storeResult
+from KMeans import Assign_base_PSDistance, initCentroid, DBIndex, Assign, DunnIndex, Kmeans, storeResult, Kmeans_basePSDistance
 from queue import PriorityQueue
+from DKmeans import Add
 maxIte = 20
 maxIte1 = int(maxIte * 0.8)  # 欧式距离的最大迭代次数
 maxTie2 = int(maxIte * 0.2)  # 点对称距离的最大迭代次数
-k = 8  # 聚类个数
+k = 3  # 聚类个数
 knear = 2  # 点对称距离中的参数 此处和原始论文中一直
+data_name = 'ring-column'
 
 
 def PartitionBaseSymDis(centroids, data):
@@ -81,7 +83,7 @@ def GetFinalCentroid(allCentroids, size):
     finalcentroid = Add(allCentroids[0], allCentroids[1])
     for i in range(2, size):
         finalcentroid = Add(finalcentroid, allCentroids[i])
-    centroids = Kmeans(k, finalcentroid)
+    centroids = Kmeans_basePSDistance(k, finalcentroid)
     return centroids
 
 
@@ -89,8 +91,8 @@ def PSDKM():
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
-    data = np.loadtxt('dataset/2d8c/2d8c%d.txt' % rank)
-    allData = np.loadtxt('dataset/2d8c/2d8c.txt')
+    data = np.loadtxt('dataset/'+data_name+'/'+data_name+'%d.txt' % rank)
+    allData = np.loadtxt('dataset/'+data_name+'/'+data_name+'.txt')
     dimension = len(data[0])
     length = len(data)
     centroids = initCentroid(k, data)
@@ -126,7 +128,7 @@ def PSDKM():
     # 交给rank为0的进程对所有中心点进行汇总
     if rank == 0:
         finalCentroids = GetFinalCentroid(allCentroids, size)
-        filename = '10d10c_PSDKMeans.txt'
+        filename = 'PSDKM'+data_name+'.txt'
         storeResult(allData, finalCentroids, filename)
 
 
