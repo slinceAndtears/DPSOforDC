@@ -6,6 +6,9 @@ from KMeans import Assign
 from KMeans import FitCH, storeResult
 from dcpso import dcpso
 
+file_name = ''
+k = 2
+
 
 def Add(d1, d2):
     l1 = len(d1)
@@ -34,15 +37,16 @@ def DKmeans(k, data):
                 centroid = Add(centroid, recvCentroid)
         finalCentroid = Kmeans(k, centroid)
         # print(finalCentroid)
-        filename = ''
+        filename = 'DPSO'+file_name+'.txt'
         storeResult(data, finalCentroid, filename)
     else:
-        d = np.loadtxt('dataset/10d10c/10d10c%d.txt' % rank)
-        print('finish')
+        path = 'dataset/'+file_name+'/'+file_name+'%d.txt'
+        d = np.loadtxt(path % rank)
+        # print('finish')
         centroid = dcpso(k, d)
         comm.send(centroid, dest=size-1)
 
 
 if __name__ == "__main__":
-    data = np.loadtxt('dataset/10d10c/10d10c.txt')
-    DKmeans(10, data)
+    data = np.loadtxt('dataset/'+file_name+'/'+file_name+'.txt')
+    DKmeans(k, data)
