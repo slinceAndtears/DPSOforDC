@@ -1,8 +1,8 @@
 from mpi4py import MPI
 import numpy as np
-from KMeans import Kmeans
+from KMeans import Kmeans, Kmeans_basePSDistance
 from KMeans import DBIndex
-from KMeans import Assign
+from KMeans import Assign, Assign_base_PSDistance
 from KMeans import FitCH, Iindex, storeResult
 from Dunn import dunn_fast
 
