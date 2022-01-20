@@ -279,7 +279,7 @@ def storeResult(data, centroid, filename):  # 用于保存最终的结果
     f.writelines(str(IValue)+'\n')
 
     f.writelines('This is Dunn index\n')
-    DunnValue = dunn_fast(data, label, centroid)
+    DunnValue = dunn_fast(data, label)
     f.writelines(str(DunnValue)+'\n')
 
     f.close()
