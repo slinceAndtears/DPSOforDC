@@ -23,14 +23,35 @@ data_name = 'ring-column'
 
 
 def PartitionBaseSymDis(centroids, data):
+    nn_dis = 0.
+    for i in range(len(data)):
+        min_dis = sys.maxsize
+        for j in range(len(data)):
+            if i != j and min_dis > EucDistance(data[i], data[j]):
+                min_dis = EucDistance(data[i], data[j])
+        if nn_dis < min_dis:
+            nn_dis = min_dis
     label = np.zeros(len(data), dtype=int)
     for i in range(len(data)):
         min = sys.maxsize
+        min_index = 0
         for j in range(len(centroids)):
             symdis = PointSymDistance(data, data[i], centroids[j])
             if min > symdis:
                 min = symdis
-                label[i] = j
+                min_index = j
+        if min/EucDistance(data[i], centroids[min_index]) <= nn_dis:
+            label[i] = min_index
+            print("使用PS")
+        else:
+            print("使用EU")
+            min = sys.maxsize
+            min_index = 0
+            for j in range(len(centroids)):
+                eu_dis = EucDistance(data[i], centroids[j])
+                if min > eu_dis:
+                    min = eu_dis
+                    min_index = j
     return label
 
 
