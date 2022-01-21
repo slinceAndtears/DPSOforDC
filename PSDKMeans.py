@@ -42,9 +42,7 @@ def PartitionBaseSymDis(centroids, data):
                 min_index = j
         if min/EucDistance(data[i], centroids[min_index]) <= nn_dis:
             label[i] = min_index
-            print("使用PS")
         else:
-            print("使用EU")
             min = sys.maxsize
             min_index = 0
             for j in range(len(centroids)):
@@ -75,7 +73,7 @@ def UpdateCentroidsAndLag(data, label, allCentroids, allLag, oldCentroids, oldLa
                 oldCentroids[i] - oldLag[i] + allLag[(j - 1 + size) % size][i]
         centroid[i] = (sumPoint + sumCentroids) / (2 * u * size + n)
         # 更新拉格朗日乘数
-        L = L + u * (centroid[i] - allCentroids[nextPeer][i])
+        L[i] = L[i] + u * (centroid[i] - allCentroids[nextPeer][i])
     return centroid, L
 
 
@@ -118,7 +116,7 @@ def PSDKM():
     length = len(data)
     centroids = initCentroid(k, data)
     #u = np.random.random_sample()
-    u = 0.6
+    u = 6
     print('this is process%d 初始化的L为' % rank)
     # 初始化拉格朗日乘数
     L = np.zeros([k, dimension], dtype=float)
