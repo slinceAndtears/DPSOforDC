@@ -1,3 +1,5 @@
+from cProfile import label
+from operator import le
 import numpy as np
 import sys
 from sklearn import metrics
@@ -8,7 +10,8 @@ from queue import PriorityQueue
 import matplotlib.pyplot as plt
 # 欧几里得距离
 knear = 2
-maxIte=20
+maxIte = 20
+
 
 def distance(d1, d2):
     sum = 0.
@@ -162,7 +165,7 @@ def Kmeans_basePSDistance(k, data):
     return centroid
 
 
-def Kmeans(k, data):
+def Kmeans1(k, data):
     centroid = initCentroid(k, data)
     error = 0.
     label = Assign(centroid, data)
@@ -286,18 +289,20 @@ def storeResult(data, centroid, filename):  # 用于保存最终的结果
 
 
 def getValidIndexResult():
-    d = 20
-    c = 10
+    d = 2
+    c = 2
     centroids = np.zeros([c, d], dtype=float)
-    dataset = np.loadtxt('dataset/20d10c/20d10c.txt')
+    dataset = np.loadtxt('dataset/two-ring/two-ring.txt')
     x = 0
     y = 0
+    k = 1
     f = open('centroid.txt', 'r')
     for line in f.readlines():
         line = line.replace('[', '')
         line = line.replace(']', '')
         line = line.strip('\n')
         line = line.split()
+        #print(line)
         line = [float(x) for x in line]
         a = np.array(line)
         for i in range(len(a)):
@@ -306,24 +311,37 @@ def getValidIndexResult():
             if y == d:
                 y = 0
                 x += 1
-    label = Assign(centroids, dataset)
-    print('CH index is :')
-    print(FitCH(dataset, label, centroids))
+        if x==d and y==0:
+            print('第%d次的结果为:'%k)
+            k+=1
+            label = Assign_base_PSDistance(centroids, dataset)
+            print('SH index is :')
+            print(metrics.silhouette_score(dataset, label))
+            print('Dunn index is')
+            print(dunn_fast(dataset, label))
+            label_test=Assign(centroids,dataset)
+            print('test CH index is')
+            print(FitCH(dataset,label_test,centroids))
+            centroids = np.zeros([c, d], dtype=float)
+            x=0
+            y=0
+    #print('CH index is :')
+    #print(FitCH(dataset, label, centroids))
     # print(metrics.calinski_harabasz_score(dataset,label))
-    print('DB index is :')
-    print(DBIndex(dataset, label, centroids))
+    #print('DB index is :')
+    #print(DBIndex(dataset, label, centroids))
     # print(metrics.davies_bouldin_score(dataset,label))
-    print('I index is :')
-    print(Iindex(dataset, label, centroids))
-    print("Dunn Index is :")
-    print(dunn_fast(dataset, label))
+    #print('I index is :')
+    #print(Iindex(dataset, label, centroids))
+    #print("Dunn Index is :")
+    #print(dunn_fast(dataset, label))
 
 
 def Test3():
     data = np.loadtxt('dataset/half-ring-1000/half-ring-1000.txt')
     k = 2
     print('finish')
-    centroid,label = Kmeans_basePSDistance(k, data)
+    centroid, label = Kmeans_basePSDistance(k, data)
     #label = Assign_base_PSDistance(centroid, data)
     # print(DBIndex(data,label,centroid))
     #myindex = DunnIndex(data, label, k)
@@ -355,12 +373,28 @@ def test_DBSCAN():
     plt.scatter(data[:, 0], data[:, 1], c=label, marker='.')
     plt.show()
 
+
 def Test1():
     for i in range(30):
         Test3()
 
 
+def cluster_map():
+    data = np.loadtxt('centroid.txt', dtype=int)
+    '''
+    k=100
+    length=len(data)
+    nodes=np.zeros([length,2])
+    for i in range(length):
+        nodes[i][0]=data[i][1]
+        nodes[i][1]=data[i][2]
+    '''
+    np.set_printoptions(suppress=True)
+    np.savetxt('r1.txt', data, fmt='%d')
+
+
 if __name__ == "__main__":
-    Test3()
-    #test_DBSCAN()
-    # getValidIndexResult()
+    # Test3()
+    # test_DBSCAN()
+    getValidIndexResult()
+    # cluster_map()
