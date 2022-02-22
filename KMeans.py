@@ -165,7 +165,7 @@ def Kmeans_basePSDistance(k, data):
     return centroid
 
 
-def Kmeans1(k, data):
+def Kmeans(k, data):
     centroid = initCentroid(k, data)
     error = 0.
     label = Assign(centroid, data)
@@ -281,9 +281,9 @@ def storeResult(data, centroid, filename):  # 用于保存最终的结果
     IValue = Iindex(data, label, centroid)
     f.writelines(str(IValue)+'\n')
 
-    f.writelines('This is Dunn index\n')
-    DunnValue = dunn_fast(data, label)
-    f.writelines(str(DunnValue)+'\n')
+    #f.writelines('This is Dunn index\n')
+    #DunnValue = dunn_fast(data, label)
+    #f.writelines(str(DunnValue)+'\n')
 
     f.close()
 
@@ -292,7 +292,7 @@ def getValidIndexResult():
     d = 2
     c = 2
     centroids = np.zeros([c, d], dtype=float)
-    dataset = np.loadtxt('dataset/two-ring/two-ring.txt')
+    dataset = np.loadtxt('dataset/ring-round/ring-round.txt')
     x = 0
     y = 0
     k = 1
@@ -302,7 +302,7 @@ def getValidIndexResult():
         line = line.replace(']', '')
         line = line.strip('\n')
         line = line.split()
-        #print(line)
+        # print(line)
         line = [float(x) for x in line]
         a = np.array(line)
         for i in range(len(a)):
@@ -311,20 +311,20 @@ def getValidIndexResult():
             if y == d:
                 y = 0
                 x += 1
-        if x==d and y==0:
-            print('第%d次的结果为:'%k)
-            k+=1
+        if x == c and y == 0:
+            print('第%d次的结果为:' % k)
+            k += 1
             label = Assign_base_PSDistance(centroids, dataset)
             print('SH index is :')
             print(metrics.silhouette_score(dataset, label))
             print('Dunn index is')
             print(dunn_fast(dataset, label))
-            label_test=Assign(centroids,dataset)
+            label_test = Assign(centroids, dataset)
             print('test CH index is')
-            print(FitCH(dataset,label_test,centroids))
+            print(FitCH(dataset, label_test, centroids))
             centroids = np.zeros([c, d], dtype=float)
-            x=0
-            y=0
+            x = 0
+            y = 0
     #print('CH index is :')
     #print(FitCH(dataset, label, centroids))
     # print(metrics.calinski_harabasz_score(dataset,label))
@@ -375,26 +375,42 @@ def test_DBSCAN():
 
 
 def Test1():
-    for i in range(30):
-        Test3()
+    data=np.loadtxt('dataset/10d20c/10d20c.txt')
+    fileName='10d20cDSCA.txt'
+    for i in range(20):
+        centroid=fcm(data,20)
+        label=Assign(centroid,data)
+        storeResult(data,centroid,fileName)
 
 
 def cluster_map():
-    data = np.loadtxt('centroid.txt', dtype=int)
+    data = np.loadtxt('centroid.txt')
+    #label = np.loadtxt('r1.txt', dtype=int)
     '''
-    k=100
-    length=len(data)
-    nodes=np.zeros([length,2])
-    for i in range(length):
-        nodes[i][0]=data[i][1]
-        nodes[i][1]=data[i][2]
+    t=np.zeros([len(data),2],dtype=int)
+    for i in range(len(data)):
+        t[i][0]=data[i][0]
+        t[i][1]=data[i][1]
+    np.savetxt('r1.txt',t,fmt='%d')
     '''
+    k=75
+    model=KMeans(n_clusters=k).fit(data)
+    label=model.labels_
+    sum=np.zeros(k,dtype=int)
+    for i in range(len(data)):
+        sum[label[i]]+=1
+    print(sum)
+    print(np.max(sum))
+    print(np.min(sum))
+    
+    plt.scatter(data[:, 0], data[:, 1], c=label, marker='.')
+    plt.show()
     np.set_printoptions(suppress=True)
-    np.savetxt('r1.txt', data, fmt='%d')
-
+    np.savetxt('r1.txt', label, fmt='%d')
+    
 
 if __name__ == "__main__":
-    # Test3()
+    Test1()
     # test_DBSCAN()
-    getValidIndexResult()
-    # cluster_map()
+    #getValidIndexResult()
+    #cluster_map()
