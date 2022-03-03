@@ -14,11 +14,11 @@ import numpy as np
 from KMeans import Assign_base_PSDistance, initCentroid, DBIndex, Assign, DunnIndex, Kmeans, storeResult, Kmeans_basePSDistance
 from queue import PriorityQueue
 from DKmeans import Add
-maxIte = 20
+maxIte = 40
 maxIte1 = int(maxIte * 0.8)  # 欧式距离的最大迭代次数
 maxTie2 = int(maxIte * 0.2)  # 点对称距离的最大迭代次数
 k = 3  # 聚类个数
-knear = 2  # 点对称距离中的参数 此处和原始论文中一直
+knear = 4  # 点对称距离中的参数 此处和原始论文中一直
 data_name = 'ring-column'
 
 
@@ -44,12 +44,13 @@ def PartitionBaseSymDis(centroids, data):
             label[i] = min_index
         else:
             min = sys.maxsize
-            min_index = 0
+            min_ind = 0
             for j in range(len(centroids)):
                 eu_dis = EucDistance(data[i], centroids[j])
                 if min > eu_dis:
                     min = eu_dis
-                    min_index = j
+                    min_ind = j
+            label[i] = min_ind
     return label
 
 
